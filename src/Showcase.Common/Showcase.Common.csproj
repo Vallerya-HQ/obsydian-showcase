@@ -16,5 +16,6 @@
     <ProjectReference Include="..\..\..\obsydian-engine\src\Obsydian.Serialization\Obsydian.Serialization.csproj" />
     <ProjectReference Include="..\..\..\obsydian-engine\src\Obsydian.Platform\Obsydian.Platform.csproj" />
     <ProjectReference Include="..\..\..\obsydian-engine\src\Obsydian.Platform.Desktop\Obsydian.Platform.Desktop.csproj" />
+    <ProjectReference Include="..\..\..\obsydian-engine\src\Obsydian.DevTools\Obsydian.DevTools.csproj" />
   </ItemGroup>
 </Project>

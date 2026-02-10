@@ -2,6 +2,8 @@ using Obsydian.Audio;
 using Obsydian.Content;
 using Obsydian.Core;
 using Obsydian.Core.Math;
+using Obsydian.Core.Scenes;
+using Obsydian.DevTools;
 using Obsydian.Graphics;
 using Obsydian.Input;
 using Obsydian.Platform.Desktop;
@@ -15,6 +17,7 @@ namespace Showcase.Common;
 /// <summary>
 /// Base class for showcase demos. Wires up Engine + DesktopWindow + GlRenderer + InputManager.
 /// Subclasses override OnLoad/OnUpdate/OnRender to implement their demo logic.
+/// Includes DevToolsOverlay (toggled with F3) automatically.
 /// </summary>
 public abstract class ShowcaseApp
 {
@@ -28,7 +31,11 @@ public abstract class ShowcaseApp
     /// <summary>The raw Silk.NET GL context, available after OnLoad.</summary>
     protected GL Gl { get; private set; } = null!;
 
+    /// <summary>The DevTools overlay. Available after OnLoad.</summary>
+    public DevToolsOverlay? DevTools { get; private set; }
+
     private SilkInputBridge? _inputBridge;
+    private IInputContext? _silkInput;
 
     protected ShowcaseApp(EngineConfig? config = null)
     {
@@ -37,6 +44,11 @@ public abstract class ShowcaseApp
         Renderer = new GlRenderer();
         Input = new InputManager();
     }
+
+    /// <summary>
+    /// Override to provide a SceneManager for the DevTools scene hierarchy panel.
+    /// </summary>
+    protected virtual SceneManager? GetSceneManager() => null;
 
     public void Run()
     {
@@ -53,9 +65,9 @@ public abstract class ShowcaseApp
             Content.RegisterLoader(new GlTextureLoader(Gl));
 
             // Wire input
-            var silkInput = Window.NativeWindow.CreateInput();
+            _silkInput = Window.NativeWindow.CreateInput();
             _inputBridge = new SilkInputBridge(Input);
-            _inputBridge.Connect(silkInput);
+            _inputBridge.Connect(_silkInput);
 
             // Wire audio
             Audio = new OpenAlAudioEngine(contentRoot);
@@ -63,17 +75,19 @@ public abstract class ShowcaseApp
 
             Engine.Initialize();
             OnLoad();
+
+            // Create DevTools after OnLoad so subclasses can set up SceneManager first
+            DevTools = new DevToolsOverlay(
+                Gl, Window.NativeWindow, _silkInput,
+                Engine, Renderer, GetSceneManager());
         };
 
         Window.OnUpdate += dt =>
         {
-            // Order matters: Silk.NET fires input events during PollEvents() at
-            // the start of the frame, BEFORE this callback. So the pressed/released
-            // buffers are populated by the time we get here. Process game logic first,
-            // then clear the buffers at the end so they're ready for next frame's events.
             Engine.Update((float)dt);
             Audio?.Update();
             OnUpdate((float)dt);
+            DevTools?.Update((float)dt, Input);
             Input.BeginFrame();
         };
 
@@ -83,6 +97,7 @@ public abstract class ShowcaseApp
             Renderer.Clear(ClearColor);
             OnRender((float)dt);
             Renderer.EndFrame();
+            DevTools?.Render();
         };
 
         Window.OnResize += (w, h) =>
@@ -92,6 +107,7 @@ public abstract class ShowcaseApp
 
         Window.OnClose += () =>
         {
+            DevTools?.Dispose();
             Audio?.Dispose();
             Content?.Dispose();
             Engine.Shutdown();

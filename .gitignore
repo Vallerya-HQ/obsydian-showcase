@@ -8,3 +8,6 @@ obj/
 
 ## Engine is a sibling repo, not a submodule — ignore any leftover directory
 engine/
+
+## ImGui layout state (generated at runtime)
+imgui.ini

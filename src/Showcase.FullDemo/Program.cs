@@ -7,7 +7,6 @@ using Obsydian.Graphics.Particles;
 using Obsydian.Graphics.Tilemap;
 using Obsydian.Input;
 using Obsydian.Physics;
-using Obsydian.UI;
 using Obsydian.UI.Dialogue;
 using Obsydian.UI.Widgets;
 using Showcase.Common;
@@ -48,6 +47,8 @@ sealed class FullDemoApp : ShowcaseApp
     {
         _scenes.Render(dt);
     }
+
+    protected override SceneManager? GetSceneManager() => _scenes;
 
     public SceneManager Scenes => _scenes;
 }
@@ -123,7 +124,7 @@ sealed class DemoTitleScene : IScene
             "Screen Transitions (Fade)",
             "Game Clock / Time of Day",
             "Render Layer Sorting",
-            "Debug Overlay (F3)",
+            "ImGui DevTools (F3)",
             "Gamepad Support",
             "Save Migration Chain"
         };
@@ -167,7 +168,6 @@ sealed class GameplayDemoScene : IScene
 
     // Systems
     private GameClock _clock = null!;
-    private DebugOverlay _debug = null!;
     private ScreenTransition _transition = null!;
     private ParticleEmitter _torchParticles = null!;
 
@@ -193,14 +193,6 @@ sealed class GameplayDemoScene : IScene
         // Game clock — starts at 8 AM
         _clock = new GameClock { TimeScale = 15f };
         _clock.SetTime(8, 0);
-
-        // Debug overlay
-        _debug = new DebugOverlay();
-        _debug.AddDynamic(() => $"Clock: {_clock.TimeString}");
-        _debug.AddDynamic(() => $"Phase: {_clock.Phase}");
-        _debug.AddDynamic(() => $"Coins: {_coins}");
-        _debug.AddDynamic(() => $"Particles: {_torchParticles.ActiveCount}");
-        _debug.AddDynamic(() => $"Draw Cmds: {_layers.CommandCount}");
 
         // Screen transition (fade in)
         _transition = new ScreenTransition { FadeInDuration = 0.4f };
@@ -240,7 +232,6 @@ sealed class GameplayDemoScene : IScene
     public void Update(float dt)
     {
         _transition.Update(dt);
-        _debug.Update(_app.Input);
         _clock.Update(dt);
         _torchParticles.Update(dt);
 
@@ -388,7 +379,7 @@ sealed class GameplayDemoScene : IScene
         r.DrawText($"Coins: {_coins}", new Vec2(160, 10), Color.Gold, 2f);
 
         // Controls
-        r.DrawText("WASD=Move  E=Talk  ESC=Pause  F3=Debug", new Vec2(350, 700), new Color(100, 100, 100), 2f);
+        r.DrawText("WASD=Move  E=Talk  ESC=Pause  F3=DevTools", new Vec2(350, 700), new Color(100, 100, 100), 2f);
 
         // Dialogue box (screen space)
         _dialogueBox.Draw(r);
@@ -401,9 +392,6 @@ sealed class GameplayDemoScene : IScene
             r.DrawText("Press ESC to resume", new Vec2(470, 380), Color.White.WithAlpha(200), 3f);
             r.DrawText("Press Q to quit to title", new Vec2(440, 430), Color.White.WithAlpha(200), 3f);
         }
-
-        // Debug overlay (on top of everything)
-        _debug.Draw(r, _app.Engine.Time);
 
         // Screen transition (very last)
         _transition.Draw(r, 1280, 720);
@@ -455,7 +443,7 @@ sealed class GameplayDemoScene : IScene
         tree.Nodes["tips"] = new DialogueNode
         {
             Id = "tips", Speaker = "Elder",
-            Text = "Collect the yellow coins for health. Press F3 to see the debug overlay. Watch the time of day change!",
+            Text = "Collect the yellow coins for health. Press F3 to see the DevTools overlay. Watch the time of day change!",
             NextNodeId = "greet"
         };
 

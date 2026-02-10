@@ -155,6 +155,7 @@ sealed class GameplayScene : IScene
 
         _camera = new Camera2D(1280, 720)
         {
+            Zoom = 3f,
             FollowSmoothing = 8f
         };
 

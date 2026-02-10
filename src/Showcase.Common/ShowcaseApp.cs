@@ -42,7 +42,7 @@ public abstract class ShowcaseApp
         Window.OnLoad += () =>
         {
             Gl = GL.GetApi(Window.NativeWindow);
-            Renderer.InitializeWithGl(Gl, Window.FramebufferWidth, Window.FramebufferHeight);
+            Renderer.InitializeWithGl(Gl, Window.FramebufferWidth, Window.FramebufferHeight, Window.Width, Window.Height);
 
             // Set up content manager with exe directory as root
             var contentRoot = AppDomain.CurrentDomain.BaseDirectory;
@@ -79,7 +79,7 @@ public abstract class ShowcaseApp
 
         Window.OnResize += (w, h) =>
         {
-            Renderer.OnResize(w, h);
+            Renderer.OnResize(w, h, Window.Width, Window.Height);
         };
 
         Window.OnClose += () =>

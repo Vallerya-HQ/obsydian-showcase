@@ -88,7 +88,7 @@ sealed class TitleScene : IScene
 
         // Title
         r.DrawText("OBSYDIAN ENGINE", new Vec2(380, 180), Color.White, 5f);
-        r.DrawText("v0.2.0", new Vec2(590, 240), new Color(150, 150, 150), 2f);
+        r.DrawText("v0.2.0 — NO SUBMODULES!", new Vec2(480, 240), new Color(100, 255, 100), 2f);
 
         // Feature list
         var features = new[]
@@ -297,8 +297,8 @@ sealed class GameplayScene : IScene
             r.DrawRect(new Rect(41, 11, hpWidth, 12), _health > 0.3f ? Color.Green : Color.Red);
         r.DrawRect(new Rect(40, 10, 102, 14), Color.White, filled: false);
 
-        // Coins
-        r.DrawText($"Coins: {_coins}", new Vec2(160, 10), new Color(255, 220, 50), 2f);
+        // Coins — using Color.Gold from engine
+        r.DrawText($"Coins: {_coins}", new Vec2(160, 10), Color.Gold, 2f);
 
         // Time
         var mins = (int)(_playTime / 60);
@@ -325,10 +325,10 @@ sealed class GameplayScene : IScene
         // Pause overlay
         if (_paused)
         {
-            r.DrawRect(new Rect(0, 0, 1280, 720), new Color(0, 0, 0, 150));
-            r.DrawText("PAUSED", new Vec2(520, 280), Color.White, 5f);
-            r.DrawText("Press ESC to resume", new Vec2(470, 380), new Color(200, 200, 200), 3f);
-            r.DrawText("Press Q to quit to title", new Vec2(440, 430), new Color(200, 200, 200), 3f);
+            r.DrawRect(new Rect(0, 0, 1280, 720), Color.Black.WithAlpha(150));
+            r.DrawText("PAUSED", new Vec2(520, 280), Color.Gold, 5f);
+            r.DrawText("Press ESC to resume", new Vec2(470, 380), Color.White.WithAlpha(200), 3f);
+            r.DrawText("Press Q to quit to title", new Vec2(440, 430), Color.White.WithAlpha(200), 3f);
         }
     }
 

@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Showcase.LoadingDemo</RootNamespace>
+    <Description>Showcase: AsyncContentQueue loading screen with progress bar.</Description>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Showcase.Common\Showcase.Common.csproj" />
+  </ItemGroup>
+</Project>

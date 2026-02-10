@@ -5,12 +5,9 @@ using Obsydian.Graphics;
 using Obsydian.Graphics.Tilemap;
 using Obsydian.Input;
 using Obsydian.Physics;
-using Obsydian.Platform.Desktop.Rendering;
 using Obsydian.UI.Widgets;
 using Showcase.Common;
-using Silk.NET.OpenGL;
 using Texture = Obsydian.Graphics.Texture;
-using GL = Silk.NET.OpenGL.GL;
 
 var app = new EngineDemoApp();
 app.Run();
@@ -150,7 +147,7 @@ sealed class GameplayScene : IScene
 
     public void Enter()
     {
-        _tilesetTexture = CreateTilesetTexture(_app.Renderer.Gl);
+        _tilesetTexture = _app.Content.Load<Texture>("content/tileset.png");
         _tilemap = BuildMap(_tilesetTexture);
 
         _camera = new Camera2D(1280, 720)
@@ -164,39 +161,56 @@ sealed class GameplayScene : IScene
         _npcPos = new Vec2(18 * 16, 6 * 16);
 
         _camera.LookAt(_playerPos);
+
+        // Register ActionMap bindings
+        var actions = _app.Input.Actions;
+        actions.RegisterAction("Movement", "MoveUp",
+            InputBinding.FromKey(Key.W, ActivationMode.WhileHeld),
+            InputBinding.FromKey(Key.Up, ActivationMode.WhileHeld));
+        actions.RegisterAction("Movement", "MoveDown",
+            InputBinding.FromKey(Key.S, ActivationMode.WhileHeld),
+            InputBinding.FromKey(Key.Down, ActivationMode.WhileHeld));
+        actions.RegisterAction("Movement", "MoveLeft",
+            InputBinding.FromKey(Key.A, ActivationMode.WhileHeld),
+            InputBinding.FromKey(Key.Left, ActivationMode.WhileHeld));
+        actions.RegisterAction("Movement", "MoveRight",
+            InputBinding.FromKey(Key.D, ActivationMode.WhileHeld),
+            InputBinding.FromKey(Key.Right, ActivationMode.WhileHeld));
+        actions.RegisterAction("Interaction", "Interact",
+            InputBinding.FromKey(Key.E));
+        actions.RegisterAction("UI", "Pause",
+            InputBinding.FromKey(Key.Escape));
+        actions.RegisterAction("UI", "Quit",
+            InputBinding.FromKey(Key.Q));
     }
 
-    public void Exit()
-    {
-        _tilesetTexture?.Dispose();
-    }
+    public void Exit() { }
 
     public void Update(float dt)
     {
-        if (_app.Input.IsKeyPressed(Key.Escape))
+        var actions = _app.Input.Actions;
+
+        if (actions.IsActionPressed("Pause"))
         {
-            if (_paused)
-                _paused = false;
-            else
-                _paused = true;
+            _paused = !_paused;
             return;
         }
 
         if (_paused)
         {
-            if (_app.Input.IsKeyPressed(Key.Q))
+            if (actions.IsActionPressed("Quit"))
                 _app.Scenes.Switch(new TitleScene(_app));
             return;
         }
 
         _playTime += dt;
 
-        // Player movement
+        // Player movement via ActionMap
         var dir = Vec2.Zero;
-        if (_app.Input.IsKeyDown(Key.W) || _app.Input.IsKeyDown(Key.Up)) dir += Vec2.Up;
-        if (_app.Input.IsKeyDown(Key.S) || _app.Input.IsKeyDown(Key.Down)) dir += Vec2.Down;
-        if (_app.Input.IsKeyDown(Key.A) || _app.Input.IsKeyDown(Key.Left)) dir += Vec2.Left;
-        if (_app.Input.IsKeyDown(Key.D) || _app.Input.IsKeyDown(Key.Right)) dir += Vec2.Right;
+        if (actions.IsActionHeld("MoveUp")) dir += Vec2.Up;
+        if (actions.IsActionHeld("MoveDown")) dir += Vec2.Down;
+        if (actions.IsActionHeld("MoveLeft")) dir += Vec2.Left;
+        if (actions.IsActionHeld("MoveRight")) dir += Vec2.Right;
 
         if (dir.LengthSquared > 0)
         {
@@ -219,16 +233,23 @@ sealed class GameplayScene : IScene
 
         // NPC interaction
         var distToNpc = Vec2.Distance(_playerPos, _npcPos);
-        if (distToNpc < 24 && _app.Input.IsKeyPressed(Key.E))
+        if (distToNpc < 24 && actions.IsActionPressed("Interact"))
         {
             _showDialogue = !_showDialogue;
             _dialogueTimer = 0;
+            if (_showDialogue)
+                actions.DisableGroup("Movement");
+            else
+                actions.EnableGroup("Movement");
         }
         if (_showDialogue)
         {
             _dialogueTimer += dt;
             if (_dialogueTimer > 4f)
+            {
                 _showDialogue = false;
+                actions.EnableGroup("Movement");
+            }
         }
 
         // Coin collection (simple — collect when walking near specific tiles)
@@ -341,122 +362,6 @@ sealed class GameplayScene : IScene
             if (tile.Solid) return true;
         }
         return false;
-    }
-
-    // ─── Procedural tileset texture (no asset files needed) ────────────────────
-
-    private static Texture CreateTilesetTexture(GL gl)
-    {
-        // 8 tiles, each 16x16, laid out horizontally: 128x16 texture
-        // Tile 1: grass (green)
-        // Tile 2: wall (dark gray)
-        // Tile 3: water (blue)
-        // Tile 4: sand/path (tan)
-        // Tile 5: tree trunk (brown)
-        // Tile 6: tree top (dark green)
-        // Tile 7: coin (yellow)
-        // Tile 8: flower (pink on green)
-        int tw = 16, th = 16, cols = 8;
-        var pixels = new byte[cols * tw * th * 4];
-
-        void SetPixel(int tileIdx, int x, int y, byte r, byte g, byte b, byte a = 255)
-        {
-            int px = tileIdx * tw + x;
-            int py = y;
-            int idx = (py * cols * tw + px) * 4;
-            if (idx >= 0 && idx + 3 < pixels.Length)
-            {
-                pixels[idx] = r; pixels[idx + 1] = g; pixels[idx + 2] = b; pixels[idx + 3] = a;
-            }
-        }
-
-        void FillTile(int tileIdx, byte r, byte g, byte b)
-        {
-            for (int y = 0; y < th; y++)
-            for (int x = 0; x < tw; x++)
-                SetPixel(tileIdx, x, y, r, g, b);
-        }
-
-        // Tile 1: Grass
-        FillTile(0, 60, 140, 50);
-        // Add grass detail
-        for (int i = 0; i < 12; i++)
-        {
-            int gx = (i * 7 + 3) % 16;
-            int gy = (i * 5 + 2) % 16;
-            SetPixel(0, gx, gy, 80, 170, 60);
-        }
-
-        // Tile 2: Wall
-        FillTile(1, 80, 80, 90);
-        // Brick pattern
-        for (int y = 0; y < 16; y++)
-        for (int x = 0; x < 16; x++)
-        {
-            if (y % 4 == 0 || (x + (y / 4 % 2) * 4) % 8 == 0)
-                SetPixel(1, x, y, 60, 60, 70);
-        }
-
-        // Tile 3: Water
-        FillTile(2, 40, 80, 180);
-        for (int i = 0; i < 8; i++)
-        {
-            int wx = (i * 5 + 1) % 14 + 1;
-            int wy = (i * 3 + 4) % 14 + 1;
-            SetPixel(2, wx, wy, 60, 110, 210);
-            SetPixel(2, wx + 1, wy, 60, 110, 210);
-        }
-
-        // Tile 4: Sand/path
-        FillTile(3, 200, 180, 130);
-        for (int i = 0; i < 10; i++)
-        {
-            int sx = (i * 7 + 5) % 16;
-            int sy = (i * 3 + 1) % 16;
-            SetPixel(3, sx, sy, 180, 160, 110);
-        }
-
-        // Tile 5: Tree trunk
-        FillTile(4, 60, 140, 50); // grass background
-        for (int y = 6; y < 16; y++)
-        for (int x = 6; x < 10; x++)
-            SetPixel(4, x, y, 100, 60, 30);
-
-        // Tile 6: Tree top (leafy)
-        FillTile(5, 60, 140, 50); // grass background
-        for (int y = 0; y < 12; y++)
-        for (int x = 2; x < 14; x++)
-        {
-            int cx = 8, cy = 5;
-            if ((x - cx) * (x - cx) + (y - cy) * (y - cy) < 30)
-                SetPixel(5, x, y, 30, 100, 25);
-        }
-
-        // Tile 7: Coin
-        FillTile(6, 60, 140, 50); // grass background
-        for (int y = 4; y < 12; y++)
-        for (int x = 4; x < 12; x++)
-        {
-            int cx = 8, cy = 8;
-            if ((x - cx) * (x - cx) + (y - cy) * (y - cy) < 14)
-                SetPixel(6, x, y, 255, 220, 50);
-        }
-        // coin highlight
-        SetPixel(6, 6, 6, 255, 250, 150);
-        SetPixel(6, 7, 6, 255, 250, 150);
-
-        // Tile 8: Flower
-        FillTile(7, 60, 140, 50); // grass background
-        SetPixel(7, 8, 9, 40, 120, 30); // stem
-        SetPixel(7, 8, 8, 40, 120, 30);
-        SetPixel(7, 8, 7, 255, 100, 150); // center
-        SetPixel(7, 7, 6, 255, 130, 170);
-        SetPixel(7, 9, 6, 255, 130, 170);
-        SetPixel(7, 8, 5, 255, 130, 170);
-        SetPixel(7, 7, 8, 255, 130, 170);
-        SetPixel(7, 9, 8, 255, 130, 170);
-
-        return GlTexture.Create(gl, cols * tw, th, pixels, "__demo_tileset");
     }
 
     private static Tilemap BuildMap(Texture tileset)

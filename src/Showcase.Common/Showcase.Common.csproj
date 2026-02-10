@@ -5,11 +5,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Silk.NET.Input" Version="2.21.0" />
-    <PackageReference Include="Silk.NET.OpenGL" Version="2.21.0" />
-  </ItemGroup>
-
   <!-- Engine references via sibling repo -->
   <ItemGroup>
     <ProjectReference Include="..\..\..\obsydian-engine\src\Obsydian.Core\Obsydian.Core.csproj" />

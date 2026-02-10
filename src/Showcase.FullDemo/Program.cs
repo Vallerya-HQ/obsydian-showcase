@@ -7,15 +7,11 @@ using Obsydian.Graphics.Particles;
 using Obsydian.Graphics.Tilemap;
 using Obsydian.Input;
 using Obsydian.Physics;
-using Obsydian.Platform.Desktop.Rendering;
 using Obsydian.UI;
 using Obsydian.UI.Dialogue;
 using Obsydian.UI.Widgets;
 using Showcase.Common;
 using Texture = Obsydian.Graphics.Texture;
-
-// Generate test audio files before the window opens
-TestSoundGenerator.EnsureTestSounds(AppDomain.CurrentDomain.BaseDirectory);
 
 var app = new FullDemoApp();
 app.Run();
@@ -184,7 +180,7 @@ sealed class GameplayDemoScene : IScene
 
     public void Enter()
     {
-        _tilesetTexture = CreateTilesetTexture(_app.Renderer.Gl);
+        _tilesetTexture = _app.Content.Load<Texture>("content/tileset.png");
         _tilemap = BuildMap(_tilesetTexture);
 
         _camera = new Camera2D(1280, 720) { Zoom = 3f, FollowSmoothing = 8f };
@@ -225,7 +221,7 @@ sealed class GameplayDemoScene : IScene
         _torchParticles.Position = new Vec2(5 * 16 + 8, 12 * 16);
 
         // Start background music
-        _app.Audio.PlayMusic("sfx/music.wav", volume: 0.4f);
+        _app.Audio.PlayMusic("content/sfx/music.wav", volume: 0.4f);
 
         // Dialogue
         _dialogueBox = new DialogueBox
@@ -239,10 +235,7 @@ sealed class GameplayDemoScene : IScene
         _npcDialogue = BuildDialogueTree();
     }
 
-    public void Exit()
-    {
-        _tilesetTexture?.Dispose();
-    }
+    public void Exit() { }
 
     public void Update(float dt)
     {
@@ -306,7 +299,7 @@ sealed class GameplayDemoScene : IScene
         bool interact = _app.Input.IsKeyPressed(Key.E) || _app.Input.Gamepad.IsButtonPressed(GamepadButton.A);
         if (distToNpc < 24 && interact)
         {
-            _app.Audio.PlaySound("sfx/interact.wav", volume: 0.5f);
+            _app.Audio.PlaySound("content/sfx/interact.wav", volume: 0.5f);
             _dialogueBox.StartDialogue(_npcDialogue);
         }
 
@@ -322,7 +315,7 @@ sealed class GameplayDemoScene : IScene
                 decorLayer[tx, ty] = new Tile(0);
                 _coins++;
                 if (_health < 1f) _health = System.Math.Min(1f, _health + 0.1f);
-                _app.Audio.PlaySound("sfx/coin.wav", volume: 0.6f, pitch: 0.1f);
+                _app.Audio.PlaySound("content/sfx/coin.wav", volume: 0.6f, pitch: 0.1f);
             }
         }
 
@@ -475,68 +468,6 @@ sealed class GameplayDemoScene : IScene
         return tree;
     }
 
-    // ─── Procedural tileset (same as EngineDemo) ─────────────────────────────
-
-    private static Texture CreateTilesetTexture(Silk.NET.OpenGL.GL gl)
-    {
-        int tw = 16, th = 16, cols = 8;
-        var pixels = new byte[cols * tw * th * 4];
-
-        void SetPixel(int tileIdx, int x, int y, byte r, byte g, byte b, byte a = 255)
-        {
-            int px = tileIdx * tw + x;
-            int idx = (y * cols * tw + px) * 4;
-            if (idx >= 0 && idx + 3 < pixels.Length)
-            { pixels[idx] = r; pixels[idx + 1] = g; pixels[idx + 2] = b; pixels[idx + 3] = a; }
-        }
-
-        void FillTile(int tileIdx, byte r, byte g, byte b)
-        {
-            for (int y = 0; y < th; y++)
-            for (int x = 0; x < tw; x++)
-                SetPixel(tileIdx, x, y, r, g, b);
-        }
-
-        FillTile(0, 60, 140, 50); // grass
-        for (int i = 0; i < 12; i++)
-            SetPixel(0, (i * 7 + 3) % 16, (i * 5 + 2) % 16, 80, 170, 60);
-
-        FillTile(1, 80, 80, 90); // wall
-        for (int y = 0; y < 16; y++)
-        for (int x = 0; x < 16; x++)
-            if (y % 4 == 0 || (x + (y / 4 % 2) * 4) % 8 == 0)
-                SetPixel(1, x, y, 60, 60, 70);
-
-        FillTile(2, 40, 80, 180); // water
-        for (int i = 0; i < 8; i++)
-        { SetPixel(2, (i * 5 + 1) % 14 + 1, (i * 3 + 4) % 14 + 1, 60, 110, 210); }
-
-        FillTile(3, 200, 180, 130); // sand
-
-        FillTile(4, 60, 140, 50); // tree trunk on grass
-        for (int y = 6; y < 16; y++) for (int x = 6; x < 10; x++) SetPixel(4, x, y, 100, 60, 30);
-
-        FillTile(5, 60, 140, 50); // tree top
-        for (int y = 0; y < 12; y++) for (int x = 2; x < 14; x++)
-            if ((x - 8) * (x - 8) + (y - 5) * (y - 5) < 30)
-                SetPixel(5, x, y, 30, 100, 25);
-
-        FillTile(6, 60, 140, 50); // coin
-        for (int y = 4; y < 12; y++) for (int x = 4; x < 12; x++)
-            if ((x - 8) * (x - 8) + (y - 8) * (y - 8) < 14)
-                SetPixel(6, x, y, 255, 220, 50);
-        SetPixel(6, 6, 6, 255, 250, 150); SetPixel(6, 7, 6, 255, 250, 150);
-
-        FillTile(7, 60, 140, 50); // flower
-        SetPixel(7, 8, 9, 40, 120, 30); SetPixel(7, 8, 8, 40, 120, 30);
-        SetPixel(7, 8, 7, 255, 100, 150);
-        SetPixel(7, 7, 6, 255, 130, 170); SetPixel(7, 9, 6, 255, 130, 170);
-        SetPixel(7, 8, 5, 255, 130, 170); SetPixel(7, 7, 8, 255, 130, 170);
-        SetPixel(7, 9, 8, 255, 130, 170);
-
-        return GlTexture.Create(gl, cols * tw, th, pixels, "__demo_tileset");
-    }
-
     private static Tilemap BuildMap(Texture tileset)
     {
         int mapW = 30, mapH = 20;
@@ -574,97 +505,5 @@ sealed class GameplayDemoScene : IScene
         decor.SetTile(12, 16, new Tile(7)); decor.SetTile(18, 3, new Tile(7));
 
         return map;
-    }
-}
-
-// ─── Test Sound Generator ────────────────────────────────────────────────────
-
-static class TestSoundGenerator
-{
-    public static void EnsureTestSounds(string baseDir)
-    {
-        var sfxDir = Path.Combine(baseDir, "sfx");
-        Directory.CreateDirectory(sfxDir);
-
-        GenerateWav(Path.Combine(sfxDir, "coin.wav"), 0.15f, 880f, volume: 0.5f);
-        GenerateWav(Path.Combine(sfxDir, "interact.wav"), 0.2f, 440f, volume: 0.4f);
-        GenerateChordWav(Path.Combine(sfxDir, "music.wav"), 8f, [261.6f, 329.6f, 392f], volume: 0.25f);
-    }
-
-    static void GenerateWav(string path, float duration, float frequency, float volume)
-    {
-        if (File.Exists(path)) return;
-
-        const int sampleRate = 22050;
-        int numSamples = (int)(sampleRate * duration);
-        var samples = new short[numSamples];
-
-        for (int i = 0; i < numSamples; i++)
-        {
-            float t = (float)i / sampleRate;
-            float envelope = 1f;
-            if (t < 0.01f) envelope = t / 0.01f;
-            float remaining = duration - t;
-            if (remaining < 0.05f) envelope = remaining / 0.05f;
-
-            samples[i] = (short)(MathF.Sin(2 * MathF.PI * frequency * t) * volume * 32767 * envelope);
-        }
-
-        WriteWav(path, samples, sampleRate);
-    }
-
-    static void GenerateChordWav(string path, float duration, float[] frequencies, float volume)
-    {
-        if (File.Exists(path)) return;
-
-        const int sampleRate = 22050;
-        int numSamples = (int)(sampleRate * duration);
-        var samples = new short[numSamples];
-        float perNote = volume / frequencies.Length;
-
-        for (int i = 0; i < numSamples; i++)
-        {
-            float t = (float)i / sampleRate;
-            float envelope = 1f;
-            if (t < 0.5f) envelope = t / 0.5f;
-            float remaining = duration - t;
-            if (remaining < 1f) envelope = remaining / 1f;
-
-            float sample = 0f;
-            foreach (var freq in frequencies)
-                sample += MathF.Sin(2 * MathF.PI * freq * t);
-
-            samples[i] = (short)(sample * perNote * 32767 * envelope);
-        }
-
-        WriteWav(path, samples, sampleRate);
-    }
-
-    static void WriteWav(string path, short[] samples, int sampleRate)
-    {
-        int dataSize = samples.Length * 2;
-        using var fs = File.Create(path);
-        using var bw = new BinaryWriter(fs);
-
-        // RIFF header
-        bw.Write("RIFF"u8);
-        bw.Write(36 + dataSize);
-        bw.Write("WAVE"u8);
-
-        // fmt chunk
-        bw.Write("fmt "u8);
-        bw.Write(16);
-        bw.Write((short)1);  // PCM
-        bw.Write((short)1);  // mono
-        bw.Write(sampleRate);
-        bw.Write(sampleRate * 2);  // byte rate
-        bw.Write((short)2);  // block align
-        bw.Write((short)16); // bits per sample
-
-        // data chunk
-        bw.Write("data"u8);
-        bw.Write(dataSize);
-        foreach (var s in samples)
-            bw.Write(s);
     }
 }

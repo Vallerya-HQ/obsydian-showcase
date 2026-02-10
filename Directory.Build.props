@@ -1,0 +1,15 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <LangVersion>13.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+    <Authors>Vallerya-HQ</Authors>
+    <Company>Vallerya-HQ</Company>
+    <Product>Obsydian Showcase</Product>
+    <Copyright>Copyright (c) 2026 Vallerya-HQ</Copyright>
+    <RepositoryUrl>https://github.com/Vallerya-HQ/obsydian-showcase</RepositoryUrl>
+  </PropertyGroup>
+</Project>

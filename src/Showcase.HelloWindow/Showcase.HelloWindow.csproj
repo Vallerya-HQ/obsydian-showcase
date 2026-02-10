@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Showcase.HelloWindow</RootNamespace>
+    <Description>Phase 1 showcase: window + colored quad + input.</Description>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Showcase.Common\Showcase.Common.csproj" />
+  </ItemGroup>
+</Project>

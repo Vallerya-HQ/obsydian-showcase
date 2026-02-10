@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Showcase.Common</RootNamespace>
+    <Description>Base class wiring Engine + DesktopWindow + GlRenderer for showcase apps.</Description>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Silk.NET.Input" Version="2.21.0" />
+    <PackageReference Include="Silk.NET.OpenGL" Version="2.21.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\engine\src\Obsydian.Core\Obsydian.Core.csproj" />
+    <ProjectReference Include="..\..\engine\src\Obsydian.Graphics\Obsydian.Graphics.csproj" />
+    <ProjectReference Include="..\..\engine\src\Obsydian.Input\Obsydian.Input.csproj" />
+    <ProjectReference Include="..\..\engine\src\Obsydian.Platform\Obsydian.Platform.csproj" />
+    <ProjectReference Include="..\..\engine\src\Obsydian.Platform.Desktop\Obsydian.Platform.Desktop.csproj" />
+  </ItemGroup>
+</Project>

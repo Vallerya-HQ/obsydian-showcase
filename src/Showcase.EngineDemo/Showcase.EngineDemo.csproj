@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Showcase.Common\Showcase.Common.csproj" />
-    <ProjectReference Include="..\..\engine\src\Obsydian.Physics\Obsydian.Physics.csproj" />
-    <ProjectReference Include="..\..\engine\src\Obsydian.Content\Obsydian.Content.csproj" />
-    <ProjectReference Include="..\..\engine\src\Obsydian.UI\Obsydian.UI.csproj" />
+    <ProjectReference Include="..\..\..\obsydian-engine\src\Obsydian.Physics\Obsydian.Physics.csproj" />
+    <ProjectReference Include="..\..\..\obsydian-engine\src\Obsydian.Content\Obsydian.Content.csproj" />
+    <ProjectReference Include="..\..\..\obsydian-engine\src\Obsydian.UI\Obsydian.UI.csproj" />
   </ItemGroup>
 </Project>

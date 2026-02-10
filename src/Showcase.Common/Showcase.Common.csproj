@@ -10,12 +10,13 @@
     <PackageReference Include="Silk.NET.OpenGL" Version="2.21.0" />
   </ItemGroup>
 
+  <!-- Engine references via sibling repo -->
   <ItemGroup>
-    <ProjectReference Include="..\..\engine\src\Obsydian.Core\Obsydian.Core.csproj" />
-    <ProjectReference Include="..\..\engine\src\Obsydian.Content\Obsydian.Content.csproj" />
-    <ProjectReference Include="..\..\engine\src\Obsydian.Graphics\Obsydian.Graphics.csproj" />
-    <ProjectReference Include="..\..\engine\src\Obsydian.Input\Obsydian.Input.csproj" />
-    <ProjectReference Include="..\..\engine\src\Obsydian.Platform\Obsydian.Platform.csproj" />
-    <ProjectReference Include="..\..\engine\src\Obsydian.Platform.Desktop\Obsydian.Platform.Desktop.csproj" />
+    <ProjectReference Include="..\..\..\obsydian-engine\src\Obsydian.Core\Obsydian.Core.csproj" />
+    <ProjectReference Include="..\..\..\obsydian-engine\src\Obsydian.Content\Obsydian.Content.csproj" />
+    <ProjectReference Include="..\..\..\obsydian-engine\src\Obsydian.Graphics\Obsydian.Graphics.csproj" />
+    <ProjectReference Include="..\..\..\obsydian-engine\src\Obsydian.Input\Obsydian.Input.csproj" />
+    <ProjectReference Include="..\..\..\obsydian-engine\src\Obsydian.Platform\Obsydian.Platform.csproj" />
+    <ProjectReference Include="..\..\..\obsydian-engine\src\Obsydian.Platform.Desktop\Obsydian.Platform.Desktop.csproj" />
   </ItemGroup>
 </Project>

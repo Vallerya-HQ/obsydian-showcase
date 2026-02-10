@@ -1,0 +1,17 @@
+#!/bin/bash
+# Pin the current obsydian-engine commit SHA for this project.
+# Run after testing with new engine changes to update the version lock.
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ENGINE_DIR="$SCRIPT_DIR/../obsydian-engine"
+
+if [ ! -d "$ENGINE_DIR/.git" ]; then
+  echo "Error: obsydian-engine not found at $ENGINE_DIR"
+  echo "Clone it: git clone https://github.com/Vallerya-HQ/obsydian-engine.git $ENGINE_DIR"
+  exit 1
+fi
+
+SHA=$(cd "$ENGINE_DIR" && git rev-parse HEAD)
+echo "$SHA" > "$SCRIPT_DIR/.engine-commit"
+echo "Pinned to engine commit $SHA"
+echo "$(cd "$ENGINE_DIR" && git log --oneline -1)"

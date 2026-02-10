@@ -1,3 +1,4 @@
+using Obsydian.Content;
 using Obsydian.Core;
 using Obsydian.Core.Math;
 using Obsydian.Graphics;
@@ -19,6 +20,10 @@ public abstract class ShowcaseApp
     public DesktopWindow Window { get; }
     public GlRenderer Renderer { get; }
     public InputManager Input { get; }
+    public ContentManager Content { get; private set; } = null!;
+
+    /// <summary>The raw Silk.NET GL context, available after OnLoad.</summary>
+    protected GL Gl { get; private set; } = null!;
 
     private SilkInputBridge? _inputBridge;
 
@@ -36,8 +41,13 @@ public abstract class ShowcaseApp
 
         Window.OnLoad += () =>
         {
-            var gl = GL.GetApi(Window.NativeWindow);
-            Renderer.InitializeWithGl(gl, Window.Width, Window.Height);
+            Gl = GL.GetApi(Window.NativeWindow);
+            Renderer.InitializeWithGl(Gl, Window.FramebufferWidth, Window.FramebufferHeight);
+
+            // Set up content manager with exe directory as root
+            var contentRoot = AppDomain.CurrentDomain.BaseDirectory;
+            Content = new ContentManager(contentRoot);
+            Content.RegisterLoader(new GlTextureLoader(Gl));
 
             // Wire input
             var silkInput = Window.NativeWindow.CreateInput();
@@ -50,9 +60,13 @@ public abstract class ShowcaseApp
 
         Window.OnUpdate += dt =>
         {
-            Input.BeginFrame();
+            // Order matters: Silk.NET fires input events during PollEvents() at
+            // the start of the frame, BEFORE this callback. So the pressed/released
+            // buffers are populated by the time we get here. Process game logic first,
+            // then clear the buffers at the end so they're ready for next frame's events.
             Engine.Update((float)dt);
             OnUpdate((float)dt);
+            Input.BeginFrame();
         };
 
         Window.OnRenderFrame += dt =>
@@ -70,6 +84,7 @@ public abstract class ShowcaseApp
 
         Window.OnClose += () =>
         {
+            Content?.Dispose();
             Engine.Shutdown();
             Renderer.Shutdown();
         };

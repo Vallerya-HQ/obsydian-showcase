@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Showcase.EngineDemo</RootNamespace>
+    <Description>Comprehensive engine demo: tilemap, camera, collision, text, UI, scenes.</Description>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Showcase.Common\Showcase.Common.csproj" />
+    <ProjectReference Include="..\..\engine\src\Obsydian.Physics\Obsydian.Physics.csproj" />
+    <ProjectReference Include="..\..\engine\src\Obsydian.Content\Obsydian.Content.csproj" />
+    <ProjectReference Include="..\..\engine\src\Obsydian.UI\Obsydian.UI.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,9 +1,11 @@
+using Obsydian.Audio;
 using Obsydian.Content;
 using Obsydian.Core;
 using Obsydian.Core.Math;
 using Obsydian.Graphics;
 using Obsydian.Input;
 using Obsydian.Platform.Desktop;
+using Obsydian.Platform.Desktop.Audio;
 using Obsydian.Platform.Desktop.Rendering;
 using Silk.NET.Input;
 using Silk.NET.OpenGL;
@@ -21,6 +23,7 @@ public abstract class ShowcaseApp
     public GlRenderer Renderer { get; }
     public InputManager Input { get; }
     public ContentManager Content { get; private set; } = null!;
+    public IAudioEngine Audio { get; private set; } = null!;
 
     /// <summary>The raw Silk.NET GL context, available after OnLoad.</summary>
     protected GL Gl { get; private set; } = null!;
@@ -54,6 +57,10 @@ public abstract class ShowcaseApp
             _inputBridge = new SilkInputBridge(Input);
             _inputBridge.Connect(silkInput);
 
+            // Wire audio
+            Audio = new OpenAlAudioEngine(contentRoot);
+            Audio.Initialize();
+
             Engine.Initialize();
             OnLoad();
         };
@@ -65,6 +72,7 @@ public abstract class ShowcaseApp
             // buffers are populated by the time we get here. Process game logic first,
             // then clear the buffers at the end so they're ready for next frame's events.
             Engine.Update((float)dt);
+            Audio?.Update();
             OnUpdate((float)dt);
             Input.BeginFrame();
         };
@@ -84,6 +92,7 @@ public abstract class ShowcaseApp
 
         Window.OnClose += () =>
         {
+            Audio?.Dispose();
             Content?.Dispose();
             Engine.Shutdown();
             Renderer.Shutdown();

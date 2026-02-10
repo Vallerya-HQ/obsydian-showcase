@@ -16,6 +16,9 @@
     <ProjectReference Include="..\..\..\obsydian-engine\src\Obsydian.Content\Obsydian.Content.csproj" />
     <ProjectReference Include="..\..\..\obsydian-engine\src\Obsydian.Graphics\Obsydian.Graphics.csproj" />
     <ProjectReference Include="..\..\..\obsydian-engine\src\Obsydian.Input\Obsydian.Input.csproj" />
+    <ProjectReference Include="..\..\..\obsydian-engine\src\Obsydian.Audio\Obsydian.Audio.csproj" />
+    <ProjectReference Include="..\..\..\obsydian-engine\src\Obsydian.UI\Obsydian.UI.csproj" />
+    <ProjectReference Include="..\..\..\obsydian-engine\src\Obsydian.Serialization\Obsydian.Serialization.csproj" />
     <ProjectReference Include="..\..\..\obsydian-engine\src\Obsydian.Platform\Obsydian.Platform.csproj" />
     <ProjectReference Include="..\..\..\obsydian-engine\src\Obsydian.Platform.Desktop\Obsydian.Platform.Desktop.csproj" />
   </ItemGroup>

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Showcase.FullDemo</RootNamespace>
+    <Description>Integration showcase: particles, dialogue, transitions, time, debug overlay, render layers.</Description>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Showcase.Common\Showcase.Common.csproj" />
+    <ProjectReference Include="..\..\..\obsydian-engine\src\Obsydian.Physics\Obsydian.Physics.csproj" />
+  </ItemGroup>
+</Project>

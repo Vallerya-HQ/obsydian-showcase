@@ -1,0 +1,19 @@
+{
+  "title": "Content Pipeline Demo",
+  "subtitle": "Obsydian Engine",
+  "tab_manifest": "Manifest",
+  "tab_data": "Game Data",
+  "tab_locale": "Localization",
+  "tab_scope": "Scopes",
+  "label_items": "Items",
+  "label_enemies": "Enemies",
+  "label_total": "Total Assets",
+  "label_textures": "Textures",
+  "label_audio": "Audio",
+  "label_data": "Data Files",
+  "msg_loaded": "All content loaded successfully!",
+  "msg_scope_active": "Scope is active - assets loaded",
+  "msg_scope_released": "Scope disposed - assets released",
+  "msg_language": "Current Language: English",
+  "hint_controls": "1-4: Switch Tab | L: Toggle Language | S: Toggle Scope | ESC: Quit"
+}

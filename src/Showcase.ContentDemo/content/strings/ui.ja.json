@@ -1,0 +1,19 @@
+{
+  "title": "Content Pipeline Demo [JA]",
+  "subtitle": "Obsydian Engine [JA]",
+  "tab_manifest": "Manifesuto",
+  "tab_data": "Geemu Deeta",
+  "tab_locale": "Gengo",
+  "tab_scope": "Sukoopu",
+  "label_items": "Aitemu",
+  "label_enemies": "Teki",
+  "label_total": "Soushisan",
+  "label_textures": "Tekusucha",
+  "label_audio": "Oodio",
+  "label_data": "Deeta Fairu",
+  "msg_loaded": "Subete no kontentsu ga seikou shimashita!",
+  "msg_scope_active": "Sukoopu: Akutibu - Assetto yomikomi zumi",
+  "msg_scope_released": "Sukoopu: Haiki - Assetto wo kaihou shimashita",
+  "msg_language": "Genzai no gengo: Nihongo",
+  "hint_controls": "1-4: Tabu kirikae | L: Gengo kirikae | S: Sukoopu kirikae | ESC: Shuuryou"
+}

@@ -1,0 +1,7 @@
+[
+  { "id": "slime_green", "name": "Green Slime", "hp": 20, "damage": 3, "xp": 5 },
+  { "id": "slime_red", "name": "Red Slime", "hp": 35, "damage": 6, "xp": 12 },
+  { "id": "skeleton", "name": "Skeleton", "hp": 50, "damage": 10, "xp": 25 },
+  { "id": "bat", "name": "Cave Bat", "hp": 15, "damage": 4, "xp": 8 },
+  { "id": "golem_stone", "name": "Stone Golem", "hp": 120, "damage": 18, "xp": 60 }
+]
